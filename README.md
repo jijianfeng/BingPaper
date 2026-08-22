@@ -10,7 +10,7 @@
 [![Swift 6](https://img.shields.io/badge/Swift-6.0-FA7343?logo=swift&logoColor=white)](https://swift.org)
 [![macOS 13.0+](https://img.shields.io/badge/macOS-13.0%2B-000000?logo=apple&logoColor=white)](https://apple.com/macos)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Download DMG](https://img.shields.io/badge/Download-BingPaper.dmg-brightgreen?logo=apple&logoColor=white)](https://github.com/jijianfeng/BingPaper/releases/latest/download/BingPaper-v1.0.1.dmg)
+[![Download DMG](https://img.shields.io/badge/Download-BingPaper.dmg-brightgreen?logo=apple&logoColor=white)](https://github.com/jijianfeng/BingPaper/releases/latest/download/BingPaper-v1.0.2.dmg)
 
 <p align="center">
   <a href="#-核心亮点">核心亮点</a> •
