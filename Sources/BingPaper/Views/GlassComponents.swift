@@ -41,7 +41,7 @@ public struct GlassCardModifier: ViewModifier {
         content
             .background(
                 ZStack {
-                    VisualEffectBlur(material: isDark ? .popover : .hudWindow, blendingMode: .withinWindow)
+                    VisualEffectBlur(material: isDark ? .popover : .hudWindow, blendingMode: .behindWindow)
                         .opacity(opacity)
                     
                     (isDark ? Color.white.opacity(0.06) : Color.white.opacity(0.70))
@@ -141,7 +141,7 @@ public struct AuroraAmbientBackground: View {
                 .blur(radius: 30)
             
             // 顶层全局超轻磨砂玻璃层
-            VisualEffectBlur(material: isDark ? .fullScreenUI : .hudWindow, blendingMode: .withinWindow)
+            VisualEffectBlur(material: isDark ? .fullScreenUI : .hudWindow, blendingMode: .behindWindow)
                 .opacity(isDark ? 0.4 : 0.6)
         }
         .onAppear {

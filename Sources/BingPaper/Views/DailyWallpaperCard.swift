@@ -56,7 +56,7 @@ public struct DailyWallpaperCard: View {
                                 .frame(width: 32, height: 32)
                                 .background(
                                     ZStack {
-                                        VisualEffectBlur(material: .popover, blendingMode: .withinWindow)
+                                        VisualEffectBlur(material: .popover, blendingMode: .behindWindow)
                                         Color.black.opacity(0.35)
                                     }
                                 )
@@ -78,7 +78,7 @@ public struct DailyWallpaperCard: View {
                                 .frame(width: 32, height: 32)
                                 .background(
                                     ZStack {
-                                        VisualEffectBlur(material: .popover, blendingMode: .withinWindow)
+                                        VisualEffectBlur(material: .popover, blendingMode: .behindWindow)
                                         Color.black.opacity(0.35)
                                     }
                                 )
@@ -105,7 +105,7 @@ public struct DailyWallpaperCard: View {
                                     .frame(width: 32, height: 32)
                                     .background(
                                         ZStack {
-                                            VisualEffectBlur(material: .popover, blendingMode: .withinWindow)
+                                            VisualEffectBlur(material: .popover, blendingMode: .behindWindow)
                                             Color.black.opacity(0.35)
                                         }
                                     )
@@ -143,7 +143,7 @@ public struct DailyWallpaperCard: View {
                         .padding(.horizontal, 10)
                         .background(
                             ZStack {
-                                VisualEffectBlur(material: .popover, blendingMode: .withinWindow)
+                                VisualEffectBlur(material: .popover, blendingMode: .behindWindow)
                                 Color.black.opacity(0.4)
                             }
                         )

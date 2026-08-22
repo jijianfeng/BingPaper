@@ -81,9 +81,9 @@ public final class StatusBarController: NSObject {
             popover.performClose(sender)
         } else {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            // 不要修改 popover 窗口的 isOpaque/backgroundColor：
+            // macOS 26 上该 hack 与 NSVisualEffectView 材质叠加会导致布局递归崩溃
             if let window = popover.contentViewController?.view.window {
-                window.isOpaque = false
-                window.backgroundColor = .clear
                 window.makeKey()
             }
         }

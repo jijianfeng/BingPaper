@@ -144,46 +144,52 @@ public struct MenuBarContentView: View {
                     }
                 }
                 
-                // 状态浮条 (Frosted Glass Pill Toast)
-                if let msg = viewModel.statusMessage {
-                    HStack(spacing: 6) {
-                        Image(systemName: "sparkles")
-                            .font(.caption)
-                            .foregroundColor(Color(red: 0.0, green: 0.85, blue: 1.0))
-                        Text(msg)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(isDark ? .white : Color(red: 0.08, green: 0.16, blue: 0.28))
-                            .lineLimit(1)
-                    }
-                    .padding(.vertical, 7)
-                    .padding(.horizontal, 14)
-                    .background(
-                        ZStack {
-                            VisualEffectBlur(material: isDark ? .popover : .hudWindow, blendingMode: .withinWindow)
-                            isDark ? Color(red: 0.05, green: 0.2, blue: 0.45).opacity(0.65) : Color.white.opacity(0.92)
-                        }
-                    )
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.0, green: 0.85, blue: 1.0).opacity(0.6),
-                                        isDark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                ),
-                                lineWidth: 1
-                            )
-                    )
-                    .shadow(color: Color.black.opacity(isDark ? 0.3 : 0.1), radius: 6, x: 0, y: 3)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
             }
             .padding(16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .frame(width: 410)
+        // 状态浮条：悬浮于底部，不参与布局高度计算，避免高度抖动触发 Popover 窗口 resize
+        .overlay(alignment: .bottom) {
+            if let msg = viewModel.statusMessage {
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles")
+                        .font(.caption)
+                        .foregroundColor(Color(red: 0.0, green: 0.85, blue: 1.0))
+                    Text(msg)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(isDark ? .white : Color(red: 0.08, green: 0.16, blue: 0.28))
+                        .lineLimit(1)
+                }
+                .padding(.vertical, 7)
+                .padding(.horizontal, 14)
+                .background(
+                    ZStack {
+                        VisualEffectBlur(material: isDark ? .popover : .hudWindow, blendingMode: .behindWindow)
+                        isDark ? Color(red: 0.05, green: 0.2, blue: 0.45).opacity(0.65) : Color.white.opacity(0.92)
+                    }
+                )
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.0, green: 0.85, blue: 1.0).opacity(0.6),
+                                    isDark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+                .shadow(color: Color.black.opacity(isDark ? 0.3 : 0.1), radius: 6, x: 0, y: 3)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .padding(.bottom, 10)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: viewModel.statusMessage)
+        // 固定宽高：Popover 内容尺寸恒定，杜绝 updateAnimatedWindowSize 触发链
+        .frame(width: 410, height: 440)
     }
 }
