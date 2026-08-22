@@ -18,9 +18,13 @@ rm -rf "$APP_BUNDLE"
 mkdir -p "$MACOS_DIR"
 mkdir -p "$RESOURCES_DIR"
 
-# 拷贝可执行文件
+# 拷贝可执行文件与图标资源
 cp "$PROJECT_DIR/.build/release/$APP_NAME" "$MACOS_DIR/$APP_NAME"
 chmod +x "$MACOS_DIR/$APP_NAME"
+
+if [ -f "$PROJECT_DIR/AppIcon.icns" ]; then
+    cp "$PROJECT_DIR/AppIcon.icns" "$RESOURCES_DIR/AppIcon.icns"
+fi
 
 # 生成 Info.plist
 cat <<EOF > "$CONTENTS_DIR/Info.plist"
@@ -42,6 +46,8 @@ cat <<EOF > "$CONTENTS_DIR/Info.plist"
     <string>APPL</string>
     <key>CFBundleExecutable</key>
     <string>$APP_NAME</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
