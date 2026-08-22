@@ -102,7 +102,8 @@ public final class WallpaperViewModel: ObservableObject {
     }
     
     public func applyWallpaper(image: BingImage? = nil) async {
-        guard let target = image ?? currentImage else { return }
+        guard !isSettingWallpaper,
+              let target = image ?? currentImage else { return }
         isSettingWallpaper = true
         defer { isSettingWallpaper = false }
         

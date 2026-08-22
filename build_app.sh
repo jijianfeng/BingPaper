@@ -3,6 +3,7 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_NAME="BingPaper"
+VERSION="${VERSION:-1.0.1}"
 BUILD_DIR="$PROJECT_DIR/build"
 APP_BUNDLE="$BUILD_DIR/$APP_NAME.app"
 CONTENTS_DIR="$APP_BUNDLE/Contents"
@@ -39,9 +40,9 @@ cat <<EOF > "$CONTENTS_DIR/Info.plist"
     <key>CFBundleIdentifier</key>
     <string>com.jijianfeng.BingPaper</string>
     <key>CFBundleVersion</key>
-    <string>1.0.0</string>
+    <string>$VERSION</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
+    <string>$VERSION</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleExecutable</key>

@@ -3,14 +3,14 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_NAME="BingPaper"
-VERSION="1.0.0"
+VERSION="${VERSION:-1.0.1}"
 BUILD_DIR="$PROJECT_DIR/build"
 DMG_NAME="$APP_NAME-v$VERSION.dmg"
 DMG_PATH="$BUILD_DIR/$DMG_NAME"
 DMG_STAGING="$BUILD_DIR/dmg_staging"
 
 # 1. 编译 App
-"$PROJECT_DIR/build_app.sh"
+VERSION="$VERSION" "$PROJECT_DIR/build_app.sh"
 
 # 2. 准备 DMG 打包临时目录
 echo "💿 正在打包 $DMG_NAME..."

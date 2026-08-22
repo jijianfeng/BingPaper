@@ -71,14 +71,14 @@ struct FavoriteGlassItemCard: View {
         
         VStack(alignment: .leading, spacing: 6) {
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: image.hdUrlString)) { phase in
+                RemoteImageView(url: URL(string: image.hdUrlString)) { phase in
                     switch phase {
-                    case .empty:
+                    case .loading:
                         Rectangle()
                             .fill(isDark ? Color.white.opacity(0.08) : Color.black.opacity(0.05))
                             .overlay(ProgressView().controlSize(.small))
-                    case .success(let img):
-                        img
+                    case .success(let loadedImage):
+                        Image(nsImage: loadedImage)
                             .resizable()
                             .aspectRatio(16/9, contentMode: .fill)
                     case .failure:
@@ -88,8 +88,6 @@ struct FavoriteGlassItemCard: View {
                                 Image(systemName: "photo")
                                     .foregroundColor(isDark ? .white.opacity(0.5) : .secondary)
                             )
-                    @unknown default:
-                        EmptyView()
                     }
                 }
                 .frame(height: 88)
@@ -145,6 +143,7 @@ struct FavoriteGlassItemCard: View {
                         .overlay(Capsule().stroke(Color.white.opacity(0.5), lineWidth: 0.6))
                 }
                 .buttonStyle(.plain)
+                .disabled(viewModel.isSettingWallpaper)
             }
         }
         .padding(8)
