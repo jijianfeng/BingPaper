@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode & Swift Package Manager
+.build/
+build/
+Packages/
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+.swiftpm/
+
+# User-specific files
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+
+# Archives & Logs
+*.log
+*.zip
+*.tar.gz
