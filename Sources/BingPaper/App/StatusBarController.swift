@@ -31,6 +31,7 @@ public final class StatusBarController: NSObject {
         popover = NSPopover()
         popover.behavior = .transient
         popover.animates = true
+        popover.appearance = nil // 自动跟随 macOS 系统深浅色外观
         
         let contentView = MenuBarContentView()
             .environmentObject(viewModel)
@@ -80,7 +81,11 @@ public final class StatusBarController: NSObject {
             popover.performClose(sender)
         } else {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            popover.contentViewController?.view.window?.makeKey()
+            if let window = popover.contentViewController?.view.window {
+                window.isOpaque = false
+                window.backgroundColor = .clear
+                window.makeKey()
+            }
         }
     }
     

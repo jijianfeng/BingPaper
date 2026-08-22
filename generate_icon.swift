@@ -2,7 +2,7 @@ import Foundation
 import AppKit
 import CoreGraphics
 
-func createGlassmorphismBingPaperIcon(size: CGFloat = 1024) -> NSImage {
+func createEnhancedGlassmorphismIcon(size: CGFloat = 1024) -> NSImage {
     let image = NSImage(size: NSSize(width: size, height: size))
     image.lockFocus()
     
@@ -14,200 +14,217 @@ func createGlassmorphismBingPaperIcon(size: CGFloat = 1024) -> NSImage {
     let rect = CGRect(x: 0, y: 0, width: size, height: size)
     let colorSpace = CGColorSpaceCreateDeviceRGB()
     
-    // 1. macOS Squircle 基础轮廓
+    // 1. macOS Squircle 基础几何体
     let inset: CGFloat = size * 0.08
     let squircleRect = rect.insetBy(dx: inset, dy: inset)
-    let cornerRadius: CGFloat = size * 0.22
+    let cornerRadius: CGFloat = size * 0.225
     let squirclePath = CGPath(roundedRect: squircleRect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil)
     
-    // 2. 超清柔和环境投影 (Ambient Soft Shadow)
+    // 2. 超柔和通透环境投影 (Deep Ambient & Glow Shadow)
     context.saveGState()
-    context.setShadow(offset: CGSize(width: 0, height: -size * 0.035),
-                      blur: size * 0.07,
-                      color: NSColor(red: 0.0, green: 0.15, blue: 0.4, alpha: 0.38).cgColor)
+    context.setShadow(offset: CGSize(width: 0, height: -size * 0.04),
+                      blur: size * 0.08,
+                      color: NSColor(red: 0.0, green: 0.12, blue: 0.35, alpha: 0.45).cgColor)
     context.addPath(squirclePath)
-    context.setFillColor(NSColor(red: 0.02, green: 0.08, blue: 0.22, alpha: 0.95).cgColor)
+    context.setFillColor(NSColor(red: 0.01, green: 0.04, blue: 0.12, alpha: 0.98).cgColor)
     context.fillPath()
     context.restoreGState()
     
-    // 裁剪为 Squircle 主体
+    // 裁剪进入 Squircle 内部
     context.saveGState()
     context.addPath(squirclePath)
     context.clip()
     
-    // 3. 背景深空极光发光层 (Luminous Aurora Base)
-    let baseSkyColors = [
-        NSColor(red: 0.03, green: 0.08, blue: 0.20, alpha: 1.0).cgColor,
-        NSColor(red: 0.05, green: 0.16, blue: 0.38, alpha: 1.0).cgColor,
-        NSColor(red: 0.08, green: 0.28, blue: 0.58, alpha: 1.0).cgColor
+    // 3. 背景：深邃宇宙与多色极光底色 (Deep Space & Vibrant Aurora Under-Glass)
+    let deepSpaceColors = [
+        NSColor(red: 0.02, green: 0.05, blue: 0.14, alpha: 1.0).cgColor,
+        NSColor(red: 0.04, green: 0.10, blue: 0.26, alpha: 1.0).cgColor,
+        NSColor(red: 0.06, green: 0.16, blue: 0.38, alpha: 1.0).cgColor
     ] as CFArray
-    if let skyGrad = CGGradient(colorsSpace: colorSpace, colors: baseSkyColors, locations: [0.0, 0.5, 1.0]) {
-        context.drawLinearGradient(skyGrad,
+    if let spaceGrad = CGGradient(colorsSpace: colorSpace, colors: deepSpaceColors, locations: [0.0, 0.5, 1.0]) {
+        context.drawLinearGradient(spaceGrad,
                                    start: CGPoint(x: squircleRect.midX, y: squircleRect.maxY),
                                    end: CGPoint(x: squircleRect.midX, y: squircleRect.minY),
                                    options: [])
     }
     
-    // 4. 背景高透光斑与极光透射 (Vibrant Backlight Aurora)
+    // 极光透光光斑 1 (电光青蓝 - 左上方)
     context.saveGState()
-    let auroraCenter1 = CGPoint(x: squircleRect.minX + size * 0.25, y: squircleRect.minY + size * 0.65)
-    let auroraColors1 = [
-        NSColor(red: 0.0, green: 0.82, blue: 0.98, alpha: 0.65).cgColor,  // 电光青蓝
-        NSColor(red: 0.0, green: 0.45, blue: 0.95, alpha: 0.25).cgColor,
+    let aurora1 = CGPoint(x: squircleRect.minX + size * 0.22, y: squircleRect.minY + size * 0.68)
+    let aColors1 = [
+        NSColor(red: 0.0, green: 0.92, blue: 1.0, alpha: 0.75).cgColor,
+        NSColor(red: 0.0, green: 0.55, blue: 0.98, alpha: 0.35).cgColor,
         NSColor(red: 0.0, green: 0.2, blue: 0.6, alpha: 0.0).cgColor
     ] as CFArray
-    if let grad1 = CGGradient(colorsSpace: colorSpace, colors: auroraColors1, locations: [0.0, 0.5, 1.0]) {
-        context.drawRadialGradient(grad1, startCenter: auroraCenter1, startRadius: 0, endCenter: auroraCenter1, endRadius: size * 0.45, options: [])
+    if let aGrad1 = CGGradient(colorsSpace: colorSpace, colors: aColors1, locations: [0.0, 0.45, 1.0]) {
+        context.drawRadialGradient(aGrad1, startCenter: aurora1, startRadius: 0, endCenter: aurora1, endRadius: size * 0.48, options: [])
     }
     
-    let auroraCenter2 = CGPoint(x: squircleRect.maxX - size * 0.2, y: squircleRect.minY + size * 0.55)
-    let auroraColors2 = [
-        NSColor(red: 1.0, green: 0.42, blue: 0.65, alpha: 0.55).cgColor,  // 暮光霓虹粉
-        NSColor(red: 1.0, green: 0.65, blue: 0.25, alpha: 0.35).cgColor,  // 晨光金
-        NSColor(red: 0.8, green: 0.2, blue: 0.5, alpha: 0.0).cgColor
+    // 极光透光光斑 2 (霓虹紫红与晨曦金 - 右侧)
+    let aurora2 = CGPoint(x: squircleRect.maxX - size * 0.18, y: squircleRect.minY + size * 0.58)
+    let aColors2 = [
+        NSColor(red: 1.0, green: 0.35, blue: 0.75, alpha: 0.65).cgColor,
+        NSColor(red: 1.0, green: 0.68, blue: 0.22, alpha: 0.45).cgColor,
+        NSColor(red: 0.7, green: 0.1, blue: 0.5, alpha: 0.0).cgColor
     ] as CFArray
-    if let grad2 = CGGradient(colorsSpace: colorSpace, colors: auroraColors2, locations: [0.0, 0.5, 1.0]) {
-        context.drawRadialGradient(grad2, startCenter: auroraCenter2, startRadius: 0, endCenter: auroraCenter2, endRadius: size * 0.42, options: [])
+    if let aGrad2 = CGGradient(colorsSpace: colorSpace, colors: aColors2, locations: [0.0, 0.42, 1.0]) {
+        context.drawRadialGradient(aGrad2, startCenter: aurora2, startRadius: 0, endCenter: aurora2, endRadius: size * 0.45, options: [])
     }
     context.restoreGState()
     
-    // 5. 悬浮发光旭日 (Luminous Floating Orb Sun)
-    let sunCenter = CGPoint(x: squircleRect.midX + size * 0.12, y: squircleRect.minY + size * 0.50)
-    let sunRadius = size * 0.13
+    // 4. 玻璃后的发光恒星/旭日 (Glowing Sun Sphere behind the glass)
+    let sunCenter = CGPoint(x: squircleRect.midX + size * 0.14, y: squircleRect.minY + size * 0.52)
+    let sunRadius = size * 0.12
     
     context.saveGState()
-    let sunHalo = [
-        NSColor(red: 1.0, green: 0.95, blue: 0.85, alpha: 0.95).cgColor,
-        NSColor(red: 1.0, green: 0.72, blue: 0.30, alpha: 0.65).cgColor,
-        NSColor(red: 1.0, green: 0.45, blue: 0.20, alpha: 0.20).cgColor,
+    let sunGlow = [
+        NSColor(red: 1.0, green: 0.98, blue: 0.90, alpha: 1.0).cgColor,
+        NSColor(red: 1.0, green: 0.82, blue: 0.35, alpha: 0.85).cgColor,
+        NSColor(red: 1.0, green: 0.50, blue: 0.15, alpha: 0.35).cgColor,
         NSColor(red: 1.0, green: 0.30, blue: 0.10, alpha: 0.0).cgColor
     ] as CFArray
-    if let sunGrad = CGGradient(colorsSpace: colorSpace, colors: sunHalo, locations: [0.0, 0.3, 0.65, 1.0]) {
-        context.drawRadialGradient(sunGrad, startCenter: sunCenter, startRadius: 0, endCenter: sunCenter, endRadius: sunRadius * 2.2, options: [])
+    if let sunGrad = CGGradient(colorsSpace: colorSpace, colors: sunGlow, locations: [0.0, 0.25, 0.6, 1.0]) {
+        context.drawRadialGradient(sunGrad, startCenter: sunCenter, startRadius: 0, endCenter: sunCenter, endRadius: sunRadius * 2.5, options: [])
     }
     context.restoreGState()
     
-    // 6. 第一层透明磨砂玻璃山（远景毛玻璃）
+    // 5. 第一层【高透磨砂玻璃山】 (Far Glass Mountain Plate)
     context.saveGState()
-    let glassMountainFar = CGMutablePath()
-    glassMountainFar.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY))
-    glassMountainFar.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.26))
-    glassMountainFar.addLine(to: CGPoint(x: squircleRect.minX + size * 0.26, y: squircleRect.minY + size * 0.46))
-    glassMountainFar.addLine(to: CGPoint(x: squircleRect.minX + size * 0.52, y: squircleRect.minY + size * 0.34))
-    glassMountainFar.addLine(to: CGPoint(x: squircleRect.minX + size * 0.76, y: squircleRect.minY + size * 0.50))
-    glassMountainFar.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.36))
-    glassMountainFar.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY))
-    glassMountainFar.closeSubpath()
+    let mountainFar = CGMutablePath()
+    mountainFar.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY))
+    mountainFar.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.28))
+    mountainFar.addLine(to: CGPoint(x: squircleRect.minX + size * 0.26, y: squircleRect.minY + size * 0.48))
+    mountainFar.addLine(to: CGPoint(x: squircleRect.minX + size * 0.52, y: squircleRect.minY + size * 0.36))
+    mountainFar.addLine(to: CGPoint(x: squircleRect.minX + size * 0.76, y: squircleRect.minY + size * 0.52))
+    mountainFar.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.38))
+    mountainFar.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY))
+    mountainFar.closeSubpath()
     
-    // 玻璃填充（高透明度磨砂发光质感）
-    context.addPath(glassMountainFar)
+    // 玻璃板后投影 (Drop Shadow of Glass Slab)
+    context.setShadow(offset: CGSize(width: 0, height: -size * 0.02),
+                      blur: size * 0.04,
+                      color: NSColor.black.withAlphaComponent(0.4).cgColor)
+    
+    // 玻璃半透明渐变填充
+    context.addPath(mountainFar)
     let glassColors1 = [
-        NSColor.white.withAlphaComponent(0.32).cgColor,
-        NSColor(red: 0.25, green: 0.45, blue: 0.85, alpha: 0.22).cgColor,
-        NSColor(red: 0.10, green: 0.18, blue: 0.42, alpha: 0.35).cgColor
+        NSColor.white.withAlphaComponent(0.38).cgColor,
+        NSColor(red: 0.4, green: 0.65, blue: 1.0, alpha: 0.22).cgColor,
+        NSColor(red: 0.12, green: 0.20, blue: 0.45, alpha: 0.28).cgColor
     ] as CFArray
     if let gGrad1 = CGGradient(colorsSpace: colorSpace, colors: glassColors1, locations: [0.0, 0.4, 1.0]) {
         context.saveGState()
         context.clip()
         context.drawLinearGradient(gGrad1,
-                                   start: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.50),
+                                   start: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.52),
                                    end: CGPoint(x: squircleRect.midX, y: squircleRect.minY),
                                    options: [])
         context.restoreGState()
     }
     
-    // 玻璃折射边缘高光 (Specular Glass Ridge 1)
-    context.addPath(glassMountainFar)
-    context.setLineWidth(size * 0.006)
-    context.setStrokeColor(NSColor.white.withAlphaComponent(0.65).cgColor)
+    // 玻璃顶部晶莹高光倒角 (Crisp Frosted Top Edge)
+    context.addPath(mountainFar)
+    context.setLineWidth(size * 0.008)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.75).cgColor)
     context.strokePath()
     context.restoreGState()
     
-    // 7. 第二层透明液态玻璃山（中景主峰）
+    // 6. 第二层【液态晶体玻璃主峰】 (Mid Liquid Crystal Peak)
     context.saveGState()
-    let glassMountainMid = CGMutablePath()
-    glassMountainMid.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY))
-    glassMountainMid.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.16))
-    glassMountainMid.addLine(to: CGPoint(x: squircleRect.minX + size * 0.38, y: squircleRect.minY + size * 0.42))
-    glassMountainMid.addLine(to: CGPoint(x: squircleRect.minX + size * 0.65, y: squircleRect.minY + size * 0.22))
-    glassMountainMid.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.28))
-    glassMountainMid.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY))
-    glassMountainMid.closeSubpath()
+    let mountainMid = CGMutablePath()
+    mountainMid.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY))
+    mountainMid.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.18))
+    mountainMid.addLine(to: CGPoint(x: squircleRect.minX + size * 0.38, y: squircleRect.minY + size * 0.44))
+    mountainMid.addLine(to: CGPoint(x: squircleRect.minX + size * 0.65, y: squircleRect.minY + size * 0.24))
+    mountainMid.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.30))
+    mountainMid.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY))
+    mountainMid.closeSubpath()
     
-    context.addPath(glassMountainMid)
+    // 玻璃板投影
+    context.setShadow(offset: CGSize(width: 0, height: -size * 0.025),
+                      blur: size * 0.045,
+                      color: NSColor.black.withAlphaComponent(0.45).cgColor)
+    
+    // 玻璃填充（具有强烈透光青蓝折射）
+    context.addPath(mountainMid)
     let glassColors2 = [
-        NSColor.white.withAlphaComponent(0.40).cgColor,
-        NSColor(red: 0.05, green: 0.60, blue: 0.95, alpha: 0.28).cgColor,
-        NSColor(red: 0.02, green: 0.12, blue: 0.32, alpha: 0.48).cgColor
+        NSColor.white.withAlphaComponent(0.48).cgColor,
+        NSColor(red: 0.0, green: 0.75, blue: 1.0, alpha: 0.30).cgColor,
+        NSColor(red: 0.04, green: 0.15, blue: 0.38, alpha: 0.38).cgColor
     ] as CFArray
     if let gGrad2 = CGGradient(colorsSpace: colorSpace, colors: glassColors2, locations: [0.0, 0.35, 1.0]) {
         context.saveGState()
         context.clip()
         context.drawLinearGradient(gGrad2,
-                                   start: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.42),
+                                   start: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.44),
                                    end: CGPoint(x: squircleRect.midX, y: squircleRect.minY),
                                    options: [])
         context.restoreGState()
     }
     
-    // 脊线晶莹高光
-    context.addPath(glassMountainMid)
-    context.setLineWidth(size * 0.007)
-    context.setStrokeColor(NSColor.white.withAlphaComponent(0.85).cgColor)
+    // 晶体棱线超亮高光
+    context.addPath(mountainMid)
+    context.setLineWidth(size * 0.010)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.92).cgColor)
     context.strokePath()
     context.restoreGState()
     
-    // 8. 前景流光高透玻璃层 (Foreground Liquid Glass Wave)
+    // 7. 第三层【前景流光高透曲面玻璃】 (Foreground Curved Liquid Glass Wave)
     context.saveGState()
-    let glassForeground = CGMutablePath()
-    glassForeground.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY))
-    glassForeground.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.24))
-    glassForeground.addCurve(to: CGPoint(x: squircleRect.minX + size * 0.52, y: squircleRect.minY + size * 0.15),
-                             control1: CGPoint(x: squircleRect.minX + size * 0.2, y: squircleRect.minY + size * 0.28),
-                             control2: CGPoint(x: squircleRect.minX + size * 0.35, y: squircleRect.minY + size * 0.12))
-    glassForeground.addCurve(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.20),
-                             control1: CGPoint(x: squircleRect.minX + size * 0.70, y: squircleRect.minY + size * 0.18),
-                             control2: CGPoint(x: squircleRect.minX + size * 0.86, y: squircleRect.minY + size * 0.24))
-    glassForeground.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY))
-    glassForeground.closeSubpath()
+    let mountainFg = CGMutablePath()
+    mountainFg.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY))
+    mountainFg.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.25))
+    mountainFg.addCurve(to: CGPoint(x: squircleRect.minX + size * 0.52, y: squircleRect.minY + size * 0.16),
+                        control1: CGPoint(x: squircleRect.minX + size * 0.2, y: squircleRect.minY + size * 0.30),
+                        control2: CGPoint(x: squircleRect.minX + size * 0.35, y: squircleRect.minY + size * 0.13))
+    mountainFg.addCurve(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.22),
+                        control1: CGPoint(x: squircleRect.minX + size * 0.70, y: squircleRect.minY + size * 0.19),
+                        control2: CGPoint(x: squircleRect.minX + size * 0.86, y: squircleRect.minY + size * 0.26))
+    mountainFg.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.minY))
+    mountainFg.closeSubpath()
     
-    context.addPath(glassForeground)
+    context.setShadow(offset: CGSize(width: 0, height: -size * 0.03),
+                      blur: size * 0.05,
+                      color: NSColor.black.withAlphaComponent(0.5).cgColor)
+    
+    context.addPath(mountainFg)
     let fgGlassColors = [
-        NSColor.white.withAlphaComponent(0.48).cgColor,
-        NSColor(red: 0.0, green: 0.80, blue: 0.95, alpha: 0.30).cgColor,
-        NSColor(red: 0.01, green: 0.06, blue: 0.18, alpha: 0.55).cgColor
+        NSColor.white.withAlphaComponent(0.55).cgColor,
+        NSColor(red: 0.0, green: 0.85, blue: 1.0, alpha: 0.35).cgColor,
+        NSColor(red: 0.02, green: 0.08, blue: 0.22, alpha: 0.45).cgColor
     ] as CFArray
     if let fgGrad = CGGradient(colorsSpace: colorSpace, colors: fgGlassColors, locations: [0.0, 0.3, 1.0]) {
         context.saveGState()
         context.clip()
         context.drawLinearGradient(fgGrad,
-                                   start: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.25),
+                                   start: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.26),
                                    end: CGPoint(x: squircleRect.midX, y: squircleRect.minY),
                                    options: [])
         context.restoreGState()
     }
     
-    // 前景高光刃边
-    context.addPath(glassForeground)
-    context.setLineWidth(size * 0.008)
-    context.setStrokeColor(NSColor.white.withAlphaComponent(0.92).cgColor)
+    // 纯白高光刀锋边缘
+    context.addPath(mountainFg)
+    context.setLineWidth(size * 0.012)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.98).cgColor)
     context.strokePath()
     context.restoreGState()
     
-    // 9. 悬浮磨砂玻璃画框 (Floating Frosted Glass Viewport Frame)
+    // 8. 悬浮磨砂玻璃取景框 (Floating Frosted Reticle with Viewfinder Crosshairs)
     context.saveGState()
     let frameRect = squircleRect.insetBy(dx: size * 0.065, dy: size * 0.065)
-    let framePath = CGPath(roundedRect: frameRect, cornerWidth: cornerRadius * 0.78, cornerHeight: cornerRadius * 0.78, transform: nil)
+    let frameCorner = cornerRadius * 0.78
+    let framePath = CGPath(roundedRect: frameRect, cornerWidth: frameCorner, cornerHeight: frameCorner, transform: nil)
     
-    // 内框微光描边
+    // 边框微光
     context.addPath(framePath)
-    context.setLineWidth(size * 0.005)
-    context.setStrokeColor(NSColor.white.withAlphaComponent(0.35).cgColor)
+    context.setLineWidth(size * 0.006)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.40).cgColor)
     context.strokePath()
     
-    // 四角极简取景微标记 (Corner Viewfinder Crosshairs)
-    let markLen: CGFloat = size * 0.035
-    let markPad: CGFloat = size * 0.03
+    // 四角极简取景准星标记 (Corner Crosshairs)
+    let markLen: CGFloat = size * 0.040
+    let markPad: CGFloat = size * 0.028
     let marks = CGMutablePath()
     // 左上
     marks.move(to: CGPoint(x: frameRect.minX + markPad, y: frameRect.maxY - markPad - markLen))
@@ -227,47 +244,58 @@ func createGlassmorphismBingPaperIcon(size: CGFloat = 1024) -> NSImage {
     marks.addLine(to: CGPoint(x: frameRect.maxX - markPad, y: frameRect.minY + markPad + markLen))
     
     context.addPath(marks)
-    context.setLineWidth(size * 0.004)
-    context.setStrokeColor(NSColor.white.withAlphaComponent(0.55).cgColor)
+    context.setLineWidth(size * 0.005)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.70).cgColor)
     context.strokePath()
     context.restoreGState()
     
-    // 10. macOS 26 液态玻璃斜切倒角与透光折射 (Liquid Glass Bevel & Prism Reflection)
+    // 9. 玻璃表面大幅面流动光泽 (Big Specular Curved Glass Glare)
     context.saveGState()
-    // 左上至右下的对角透光高光 (Diagonal Specular Sheen)
-    let sheenPath = CGMutablePath()
-    sheenPath.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.maxY))
-    sheenPath.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.maxY))
-    sheenPath.addLine(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.3))
-    sheenPath.closeSubpath()
+    let glarePath = CGMutablePath()
+    glarePath.move(to: CGPoint(x: squircleRect.minX, y: squircleRect.maxY))
+    glarePath.addLine(to: CGPoint(x: squircleRect.maxX, y: squircleRect.maxY))
+    glarePath.addCurve(to: CGPoint(x: squircleRect.minX, y: squircleRect.minY + size * 0.42),
+                       control1: CGPoint(x: squircleRect.maxX - size * 0.15, y: squircleRect.maxY - size * 0.25),
+                       control2: CGPoint(x: squircleRect.minX + size * 0.35, y: squircleRect.minY + size * 0.55))
+    glarePath.closeSubpath()
     
-    context.addPath(sheenPath)
-    let sheenColors = [
-        NSColor.white.withAlphaComponent(0.28).cgColor,
-        NSColor.white.withAlphaComponent(0.08).cgColor,
+    context.addPath(glarePath)
+    let glareColors = [
+        NSColor.white.withAlphaComponent(0.42).cgColor,
+        NSColor.white.withAlphaComponent(0.12).cgColor,
         NSColor.white.withAlphaComponent(0.0).cgColor
     ] as CFArray
-    if let sheenGrad = CGGradient(colorsSpace: colorSpace, colors: sheenColors, locations: [0.0, 0.4, 1.0]) {
+    if let glareGrad = CGGradient(colorsSpace: colorSpace, colors: glareColors, locations: [0.0, 0.45, 1.0]) {
         context.clip()
-        context.drawLinearGradient(sheenGrad,
-                                   start: CGPoint(x: squircleRect.minX, y: squircleRect.maxY),
-                                   end: CGPoint(x: squircleRect.maxX, y: squircleRect.minY + size * 0.2),
+        context.drawLinearGradient(glareGrad,
+                                   start: CGPoint(x: squircleRect.minX + size * 0.1, y: squircleRect.maxY),
+                                   end: CGPoint(x: squircleRect.midX, y: squircleRect.minY + size * 0.3),
                                    options: [])
     }
     context.restoreGState()
     
-    // 11. 外圈双层超薄晶莹玻璃边缘 (Crisp Glass Outer Rim)
+    // 10. 外轮廓三层高透微晶玻璃倒角与折射亮边 (Triple-Pass Specular Rim)
     context.saveGState()
+    // 外层主高光边框 (Top-Left Specular Reflection)
     context.addPath(squirclePath)
-    context.setLineWidth(size * 0.015)
-    context.setStrokeColor(NSColor.white.withAlphaComponent(0.55).cgColor)
+    context.setLineWidth(size * 0.016)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.68).cgColor)
     context.strokePath()
     
-    let innerRect = squircleRect.insetBy(dx: size * 0.006, dy: size * 0.006)
-    let innerSquircle = CGPath(roundedRect: innerRect, cornerWidth: cornerRadius * 0.96, cornerHeight: cornerRadius * 0.96, transform: nil)
-    context.addPath(innerSquircle)
-    context.setLineWidth(size * 0.005)
-    context.setStrokeColor(NSColor(red: 0.4, green: 0.8, blue: 1.0, alpha: 0.35).cgColor)
+    // 内层青蓝棱镜折射光 (Inner Prismatic Cyan Bevel)
+    let innerRect1 = squircleRect.insetBy(dx: size * 0.007, dy: size * 0.007)
+    let innerSquircle1 = CGPath(roundedRect: innerRect1, cornerWidth: cornerRadius * 0.95, cornerHeight: cornerRadius * 0.95, transform: nil)
+    context.addPath(innerSquircle1)
+    context.setLineWidth(size * 0.006)
+    context.setStrokeColor(NSColor(red: 0.3, green: 0.85, blue: 1.0, alpha: 0.55).cgColor)
+    context.strokePath()
+    
+    // 极细内部内阴影 (Subtle Inner Depth Stroke)
+    let innerRect2 = squircleRect.insetBy(dx: size * 0.014, dy: size * 0.014)
+    let innerSquircle2 = CGPath(roundedRect: innerRect2, cornerWidth: cornerRadius * 0.90, cornerHeight: cornerRadius * 0.90, transform: nil)
+    context.addPath(innerSquircle2)
+    context.setLineWidth(size * 0.003)
+    context.setStrokeColor(NSColor.white.withAlphaComponent(0.25).cgColor)
     context.strokePath()
     context.restoreGState()
     
@@ -277,7 +305,7 @@ func createGlassmorphismBingPaperIcon(size: CGFloat = 1024) -> NSImage {
     return image
 }
 
-let icon = createGlassmorphismBingPaperIcon(size: 1024)
+let icon = createEnhancedGlassmorphismIcon(size: 1024)
 guard let tiffData = icon.tiffRepresentation,
       let bitmap = NSBitmapImageRep(data: tiffData),
       let pngData = bitmap.representation(using: .png, properties: [:]) else {
@@ -287,4 +315,4 @@ guard let tiffData = icon.tiffRepresentation,
 let outputPath = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "AppIcon.png"
 let outputURL = URL(fileURLWithPath: outputPath)
 try pngData.write(to: outputURL)
-print("✅ macOS 26 液态高透玻璃 Logo 渲染完成: \(outputURL.path)")
+print("✅ 超高透液态玻璃 (Liquid Glass) Logo 渲染完成: \(outputURL.path)")

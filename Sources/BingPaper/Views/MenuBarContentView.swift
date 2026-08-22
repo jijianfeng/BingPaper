@@ -3,91 +3,187 @@ import AppKit
 
 public struct MenuBarContentView: View {
     @EnvironmentObject var viewModel: WallpaperViewModel
+    @Environment(\.colorScheme) var colorScheme
     
     public init() {}
     
     public var body: some View {
-        VStack(spacing: 12) {
-            // 1. 顶部栏 (应用标题、分段选择器、刷新、退出)
-            HStack(spacing: 8) {
-                HStack(spacing: 4) {
-                    Image(systemName: "photo.on.rectangle.angled")
-                        .foregroundColor(.accentColor)
-                    Text("BingPaper")
-                        .font(.headline)
-                }
-                
-                Spacer()
-                
-                Picker("", selection: $viewModel.selectedTab) {
-                    ForEach(MainTab.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 160)
-                
-                Spacer()
-                
-                // 刷新按钮
-                Button(action: {
-                    Task { await viewModel.loadDailyWallpapers() }
-                }) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.plain)
-                .help("刷新壁纸数据")
-                
-                // 退出菜单
-                Menu {
-                    Button("打开壁纸目录") {
-                        viewModel.openFolder()
-                    }
-                    Divider()
-                    Button("退出 BingPaper") {
-                        NSApplication.shared.terminate(nil)
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.system(size: 13))
-                }
-                .menuStyle(.borderlessButton)
-                .frame(width: 20)
-            }
-            .padding(.horizontal, 4)
+        let isDark = colorScheme == .dark
+        
+        ZStack {
+            // 1. 全局底色：深浅色自适应极光液态毛玻璃背景
+            AuroraAmbientBackground()
             
-            Divider()
-            
-            // 2. 主体视图切换
-            Group {
-                switch viewModel.selectedTab {
-                case .daily:
-                    DailyWallpaperCard()
-                case .favorites:
-                    FavoritesGridView()
-                }
-            }
-            
-            // 3. 状态提示 Toast 浮条
-            if let msg = viewModel.statusMessage {
+            // 2. 主体内容布局
+            VStack(spacing: 14) {
+                // 顶部工具栏
                 HStack(spacing: 6) {
-                    Image(systemName: "info.circle.fill")
-                        .font(.caption)
-                    Text(msg)
-                        .font(.caption)
-                        .lineLimit(1)
+                    // Logo 与标题
+                    HStack(spacing: 5) {
+                        Image(systemName: "photo.on.rectangle.angled")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Color(red: 0.0, green: 0.85, blue: 1.0), Color(red: 0.2, green: 0.55, blue: 1.0)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                        Text("BingPaper")
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .foregroundColor(isDark ? .white : Color(red: 0.12, green: 0.16, blue: 0.24))
+                            .lineLimit(1)
+                            .fixedSize()
+                    }
+                    
+                    Spacer(minLength: 6)
+                    
+                    // 自定义玻璃胶囊 Tab 切换器 (强制单行不折叠)
+                    HStack(spacing: 2) {
+                        ForEach(MainTab.allCases) { tab in
+                            Button(action: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                                    viewModel.selectedTab = tab
+                                }
+                            }) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: tab.icon)
+                                        .font(.system(size: 10, weight: .semibold))
+                                    Text(tab.rawValue)
+                                        .font(.system(size: 11, weight: .medium))
+                                        .lineLimit(1)
+                                        .fixedSize(horizontal: true, vertical: false)
+                                }
+                                .foregroundColor(
+                                    viewModel.selectedTab == tab ?
+                                    (isDark ? .white : Color(red: 0.08, green: 0.12, blue: 0.22)) :
+                                    (isDark ? .white.opacity(0.6) : .secondary)
+                                )
+                                .padding(.horizontal, 9)
+                                .padding(.vertical, 5)
+                                .background(
+                                    ZStack {
+                                        if viewModel.selectedTab == tab {
+                                            RoundedRectangle(cornerRadius: 14)
+                                                .fill(
+                                                    isDark ?
+                                                    LinearGradient(colors: [Color.white.opacity(0.28), Color.white.opacity(0.12)], startPoint: .topLeading, endPoint: .bottomTrailing) :
+                                                    LinearGradient(colors: [Color.white, Color.white.opacity(0.92)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                                )
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 14)
+                                                        .stroke(isDark ? Color.white.opacity(0.45) : Color.black.opacity(0.08), lineWidth: 0.8)
+                                                )
+                                                .shadow(color: isDark ? .clear : Color.black.opacity(0.08), radius: 3, x: 0, y: 1)
+                                        }
+                                    }
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(3)
+                    .background(isDark ? Color.black.opacity(0.25) : Color.black.opacity(0.06))
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(isDark ? Color.white.opacity(0.15) : Color.black.opacity(0.08), lineWidth: 0.8)
+                    )
+                    .fixedSize()
+                    
+                    Spacer(minLength: 6)
+                    
+                    // 右侧操作按钮组
+                    HStack(spacing: 5) {
+                        // 刷新按钮 (玻璃小圆钮)
+                        Button(action: {
+                            Task { await viewModel.loadDailyWallpapers() }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(isDark ? .white.opacity(0.85) : Color.primary.opacity(0.75))
+                                .frame(width: 26, height: 26)
+                                .background(isDark ? Color.white.opacity(0.10) : Color.black.opacity(0.05))
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(isDark ? Color.white.opacity(0.25) : Color.black.opacity(0.10), lineWidth: 0.8))
+                        }
+                        .buttonStyle(.plain)
+                        .help("刷新壁纸数据")
+                        
+                        // 菜单按钮
+                        Menu {
+                            Button("打开壁纸保存目录") {
+                                viewModel.openFolder()
+                            }
+                            Divider()
+                            Button("退出 BingPaper") {
+                                NSApplication.shared.terminate(nil)
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(isDark ? .white.opacity(0.85) : Color.primary.opacity(0.75))
+                                .frame(width: 26, height: 26)
+                                .background(isDark ? Color.white.opacity(0.10) : Color.black.opacity(0.05))
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(isDark ? Color.white.opacity(0.25) : Color.black.opacity(0.10), lineWidth: 0.8))
+                        }
+                        .menuStyle(.borderlessButton)
+                        .frame(width: 26)
+                    }
                 }
-                .foregroundColor(.white)
-                .padding(.vertical, 6)
-                .padding(.horizontal, 12)
-                .background(Color.accentColor.opacity(0.92))
-                .clipShape(Capsule())
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.2), value: viewModel.statusMessage)
+                .padding(.horizontal, 2)
+                
+                // 视图内容切换
+                Group {
+                    switch viewModel.selectedTab {
+                    case .daily:
+                        DailyWallpaperCard()
+                    case .favorites:
+                        FavoritesGridView()
+                    }
+                }
+                
+                // 状态浮条 (Frosted Glass Pill Toast)
+                if let msg = viewModel.statusMessage {
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .font(.caption)
+                            .foregroundColor(Color(red: 0.0, green: 0.85, blue: 1.0))
+                        Text(msg)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(isDark ? .white : Color(red: 0.08, green: 0.16, blue: 0.28))
+                            .lineLimit(1)
+                    }
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 14)
+                    .background(
+                        ZStack {
+                            VisualEffectBlur(material: isDark ? .popover : .hudWindow, blendingMode: .withinWindow)
+                            isDark ? Color(red: 0.05, green: 0.2, blue: 0.45).opacity(0.65) : Color.white.opacity(0.92)
+                        }
+                    )
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 0.0, green: 0.85, blue: 1.0).opacity(0.6),
+                                        isDark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                lineWidth: 1
+                            )
+                    )
+                    .shadow(color: Color.black.opacity(isDark ? 0.3 : 0.1), radius: 6, x: 0, y: 3)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
+            .padding(16)
         }
-        .padding(14)
-        .frame(width: 380)
+        .frame(width: 410)
     }
 }
