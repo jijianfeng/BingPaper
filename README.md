@@ -6,17 +6,18 @@
 
 **每日发现世界之美 · 专为 macOS 打造的原生液态毛玻璃必应壁纸应用**
 
+[![Release](https://img.shields.io/github/v/release/jijianfeng/BingPaper?color=blue&logo=github)](https://github.com/jijianfeng/BingPaper/releases/latest)
 [![Swift 6](https://img.shields.io/badge/Swift-6.0-FA7343?logo=swift&logoColor=white)](https://swift.org)
 [![macOS 13.0+](https://img.shields.io/badge/macOS-13.0%2B-000000?logo=apple&logoColor=white)](https://apple.com/macos)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Apple%20Silicon%20%7C%20Intel-success)](#)
+[![Download DMG](https://img.shields.io/badge/Download-BingPaper.dmg-brightgreen?logo=apple&logoColor=white)](https://github.com/jijianfeng/BingPaper/releases/latest/download/BingPaper-v1.0.0.dmg)
 
 <p align="center">
   <a href="#-核心亮点">核心亮点</a> •
-  <a href="#-应用截图">界面预览</a> •
+  <a href="#-界面预览">界面预览</a> •
   <a href="#-快速开始">快速安装</a> •
-  <a href="#-快捷操作">操作指南</a> •
-  <a href="#-技术架构">技术架构</a>
+  <a href="#-快捷操作指南">操作指南</a> •
+  <a href="#-技术架构与工程设计">技术架构</a>
 </p>
 
 </div>
