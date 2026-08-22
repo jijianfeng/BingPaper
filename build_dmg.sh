@@ -3,7 +3,7 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_NAME="BingPaper"
-VERSION="${VERSION:-1.0.1}"
+VERSION="${VERSION:-1.0.2}"
 BUILD_DIR="$PROJECT_DIR/build"
 DMG_NAME="$APP_NAME-v$VERSION.dmg"
 DMG_PATH="$BUILD_DIR/$DMG_NAME"
