@@ -15,17 +15,17 @@ public struct DailyWallpaperCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 // 1. 壁纸预览画框 (16:9) + 液态玻璃外框与悬浮控制
                 ZStack {
-                    AsyncImage(url: URL(string: image.hdUrlString)) { phase in
+                    RemoteImageView(url: URL(string: image.hdUrlString)) { phase in
                         switch phase {
-                        case .empty:
+                        case .loading:
                             Rectangle()
                                 .fill(isDark ? Color.white.opacity(0.05) : Color.black.opacity(0.05))
                                 .overlay(
                                     ProgressView()
                                         .controlSize(.regular)
                                 )
-                        case .success(let img):
-                            img
+                        case .success(let loadedImage):
+                            Image(nsImage: loadedImage)
                                 .resizable()
                                 .aspectRatio(16/9, contentMode: .fill)
                         case .failure:
@@ -40,8 +40,6 @@ public struct DailyWallpaperCard: View {
                                     }
                                     .foregroundColor(isDark ? .white.opacity(0.7) : .secondary)
                                 )
-                        @unknown default:
-                            EmptyView()
                         }
                     }
                     .frame(height: 205)
@@ -50,9 +48,7 @@ public struct DailyWallpaperCard: View {
                     // 左右切换悬浮玻璃按钮
                     HStack {
                         Button(action: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                viewModel.previousImage()
-                            }
+                            viewModel.previousImage()
                         }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 13, weight: .bold))
@@ -74,9 +70,7 @@ public struct DailyWallpaperCard: View {
                         Spacer()
                         
                         Button(action: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                viewModel.nextImage()
-                            }
+                            viewModel.nextImage()
                         }) {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 13, weight: .bold))

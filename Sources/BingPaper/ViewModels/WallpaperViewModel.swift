@@ -66,20 +66,17 @@ public final class WallpaperViewModel: ObservableObject {
     
     public func nextImage() {
         guard !dailyImages.isEmpty else { return }
-        if currentIndex < dailyImages.count - 1 {
-            currentIndex += 1
-        } else {
-            currentIndex = 0
-        }
+        currentIndex = (normalizedCurrentIndex + 1) % dailyImages.count
     }
     
     public func previousImage() {
         guard !dailyImages.isEmpty else { return }
-        if currentIndex > 0 {
-            currentIndex -= 1
-        } else {
-            currentIndex = dailyImages.count - 1
-        }
+        currentIndex = (normalizedCurrentIndex - 1 + dailyImages.count) % dailyImages.count
+    }
+
+    private var normalizedCurrentIndex: Int {
+        guard !dailyImages.isEmpty else { return 0 }
+        return min(max(currentIndex, 0), dailyImages.count - 1)
     }
     
     public func isCurrentFavorite() -> Bool {
